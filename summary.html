@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance Summary - Bright Attendance</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="summary-container">
+        <h2>Attendance Summary - April 2025</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Staff Name</th>
+                    <th>Present</th>
+                    <th>Absent</th>
+                    <th>Half-Day</th>
+                </tr>
+            </thead>
+            <tbody id="summary-table">
+                <!-- Summary rows will be added here -->
+            </tbody>
+        </table>
+
+        <!-- Button Section -->
+        <div style="margin-top: 20px;">
+            <button onclick="downloadPDF()">Download PDF</button>
+            <a href="dashboard.html">
+                <button>Back to Dashboard</button>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        const attendanceData = [
+            { name: "PAYAL", present: 20, absent: 5, halfDay: 2 },
+            { name: "YOGESH", present: 18, absent: 7, halfDay: 2 },
+            { name: "FAEEM", present: 22, absent: 3, halfDay: 1 },
+            { name: "AWESH", present: 21, absent: 4, halfDay: 1 },
+            { name: "APEXA", present: 19, absent: 6, halfDay: 2 },
+            { name: "MOSHIN", present: 23, absent: 2, halfDay: 1 },
+            { name: "RAJ", present: 20, absent: 5, halfDay: 3 },
+            { name: "ISHA", present: 18, absent: 7, halfDay: 2 },
+            { name: "ARBAB", present: 21, absent: 4, halfDay: 1 },
+            { name: "ALLAHRAKHA", present: 22, absent: 3, halfDay: 2 },
+            { name: "JAVED", present: 20, absent: 5, halfDay: 2 },
+            { name: "SOYEB", present: 18, absent: 7, halfDay: 2 },
+            { name: "RENUKA", present: 21, absent: 4, halfDay: 1 },
+            { name: "URWASHI", present: 22, absent: 3, halfDay: 2 },
+        ];
+
+        function loadSummary() {
+            const tableBody = document.getElementById('summary-table');
+            attendanceData.forEach(item => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${item.name}</td>
+                    <td>${item.present}</td>
+                    <td>${item.absent}</td>
+                    <td>${item.halfDay}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        window.onload = loadSummary;
+    </script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script>
+        async function downloadPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            const date = new Date();
+            const month = date.toLocaleString('default', { month: 'long' }).toLowerCase();
+            const year = date.getFullYear();
+            const filename = `${month}${year}.pdf`;
+
+            const table = document.querySelector("table");
+            const rows = table.querySelectorAll("tr");
+
+            let y = 20;
+            doc.setFontSize(14);
+            doc.text("Attendance Summary", 80, y);
+            y += 10;
+
+            rows.forEach((row) => {
+                const cells = row.querySelectorAll("th, td");
+                let x = 10;
+                cells.forEach(cell => {
+                    doc.text(cell.innerText, x, y);
+                    x += 40;
+                });
+                y += 10;
+            });
+
+            doc.save(filename);
+        }
+    </script>
+</body>
+</html>

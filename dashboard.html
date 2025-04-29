@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard - Bright Attendance</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="dashboard-container">
+    <h2>Welcome to Bright Attendance</h2>
+    <p>Select an option below:</p>
+
+    <div class="dashboard-buttons">
+      <a href="attendance.html"><button>Mark Attendance</button></a>
+      <a href="summary.html"><button>View Summary</button></a>
+      <a href="manage.html"><button>Manage Staff</button></a>
+      <a href="#" onclick="logout()"><button>Logout</button></a>
+    </div>
+  </div>
+
+  <script>
+    function logout() {
+      localStorage.removeItem("loggedInUser");
+      window.location.href = "login.html";
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Manage Staff - Bright Attendance</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="container">
+    <h2>Manage Staff</h2>
+
+    <div class="form-group">
+      <input type="text" id="staff-name" placeholder="Enter staff name" />
+      <button onclick="addStaff()">Add Staff</button>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Staff Name</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="staff-table">
+        <!-- Staff list will be added here -->
+      </tbody>
+    </table>
+
+    <!-- Dashboard button added here -->
+    <button onclick="window.location.href='dashboard.html'">Back to Dashboard</button>
+  </div>
+
+  <script>
+    // Retrieve staff list from localStorage or set to default if not found
+    let staffList = JSON.parse(localStorage.getItem("staffList")) || [
+      "PAYAL", "YOGESH", "FAEEM", "AWESH", "APEXA", "MOSHIN", "RAJ", "ISHA",
+      "ARBAB", "ALLAHRAKHA", "JAVED", "SOYEB", "RENUKA", "URWASHI"
+    ];
+
+    // Function to render staff list on the page
+    function renderStaff() {
+      const table = document.getElementById("staff-table");
+      table.innerHTML = "";
+      staffList.forEach((name, index) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${name}</td>
+          <td><button onclick="removeStaff(${index})">Remove</button></td>
+        `;
+        table.appendChild(row);
+      });
+    }
+
+    // Function to add new staff
+    function addStaff() {
+      const input = document.getElementById("staff-name");
+      const name = input.value.trim().toUpperCase();
+
+      // Check if name is valid (only alphabetic characters)
+      const nameRegex = /^[A-Za-z]+$/;
+      if (!nameRegex.test(name)) {
+        alert("Please enter a valid staff name with alphabetic characters only.");
+        return;
+      }
+
+      // Check if name is not empty and not already in the list
+      if (name && !staffList.includes(name)) {
+        staffList.push(name);
+        localStorage.setItem("staffList", JSON.stringify(staffList)); // Save to localStorage
+        renderStaff();
+        input.value = "";
+      } else if (staffList.includes(name)) {
+        alert("Name already exists.");
+      } else {
+        alert("Please enter a valid name.");
+      }
+    }
+
+    // Function to remove staff
+    function removeStaff(index) {
+      if (confirm("Are you sure to remove this staff?")) {
+        staffList.splice(index, 1);
+        localStorage.setItem("staffList", JSON.stringify(staffList)); // Save updated list to localStorage
+        renderStaff();
+      }
+    }
+
+    // Initial render
+    renderStaff();
+  </script>
+</body>
+</html>

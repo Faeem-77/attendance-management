@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mark Attendance - Bright Attendance</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f8fb;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .attendance-container {
+      max-width: 95%;
+      margin: auto;
+      background: #fff;
+      padding: 15px 25px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 1.4rem;
+      color: #333;
+    }
+
+    .table-wrapper {
+      overflow-x: auto;
+      overflow-y: auto;
+      max-height: 500px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      min-width: 800px;
+    }
+
+    th, td {
+      border: 1px solid #ccc;
+      padding: 5px 8px;
+      text-align: center;
+      font-size: 0.85rem;
+      white-space: nowrap;
+    }
+
+    select, input[type="time"] {
+      font-size: 0.75rem;
+      padding: 2px;
+      width: 90%;
+    }
+
+    button {
+      margin-top: 15px;
+      margin-right: 10px;
+      padding: 8px 16px;
+      font-size: 0.9rem;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    @media (max-width: 768px) {
+      th, td {
+        font-size: 0.75rem;
+      }
+      select, input[type="time"] {
+        font-size: 0.7rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="attendance-container">
+    <h2 id="attendance-heading">Mark Attendance</h2>
+    <form id="attendance-form">
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Staff Name</th>
+              <script>
+                const currentMonth = new Date().getMonth();
+                const currentYear = new Date().getFullYear();
+                const numberOfDays = new Date(currentYear, currentMonth + 1, 0).getDate();
+                for (let i = 1; i <= numberOfDays; i++) {
+                  const th = document.createElement("th");
+                  th.textContent = i;
+                  document.currentScript.parentElement.appendChild(th);
+                }
+              </script>
+            </tr>
+          </thead>
+          <tbody id="attendance-table"></tbody>
+        </table>
+      </div>
+      <button type="submit">Save Attendance</button>
+      <button type="button" onclick="window.location.href='dashboard.html'">Back to Dashboard</button>
+    </form>
+  </div>
+
+  <script>
+    const staffList = JSON.parse(localStorage.getItem("staffList")) || [
+      "PAYAL", "YOGESH", "FAEEM", "AWESH", "APEXA", "MOSHIN", "RAJ", "ISHA", "ARBAB", "ALLAHRAKHA", "JAVED", "SOYEB", "RENUKA", "URWASHI"
+    ];
+
+    const todayKey = new Date().toLocaleDateString("en-GB").replace(/\//g, "-");
+    document.getElementById("attendance-heading").textContent = `Mark Attendance - ${todayKey}`;
+
+    const attendanceTable = document.getElementById("attendance-table");
+
+    staffList.forEach(name => {
+      const row = document.createElement("tr");
+      let rowHTML = `<td>${name}</td>`;
+      for (let i = 1; i <= new Date().getDate(); i++) {
+        rowHTML += `
+          <td>
+            <select name="status-${name}-${i}" onchange="toggleTimeInput(this, ${i})">
+              <option value="present">P</option>
+              <option value="absent">A</option>
+              <option value="half">H</option>
+            </select><br>
+            <input type="time" name="intime-${name}-${i}" disabled />
+          </td>
+        `;
+      }
+      row.innerHTML = rowHTML;
+      attendanceTable.appendChild(row);
+    });
+
+    function toggleTimeInput(selectElement, day) {
+      const name = selectElement.name.split('-')[1];
+      const timeInput = document.querySelector(`input[name="intime-${name}-${day}"]`);
+      timeInput.disabled = selectElement.value === "absent";
+    }
+
+    document.getElementById("attendance-form").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const attendanceData = {};
+      staffList.forEach(name => {
+        const daily = {};
+        for (let i = 1; i <= new Date().getDate(); i++) {
+          const status = document.querySelector(`[name="status-${name}-${i}"]`).value;
+          const inTime = document.querySelector(`[name="intime-${name}-${i}"]`).value;
+          daily[i] = { status, inTime };
+        }
+        attendanceData[name] = daily;
+      });
+
+      const allAttendance = JSON.parse(localStorage.getItem("attendanceData")) || {};
+      allAttendance[todayKey] = attendanceData;
+      localStorage.setItem("attendanceData", JSON.stringify(allAttendance));
+      alert("Attendance saved for " + todayKey);
+    });
+  </script>
+</body>
+</html>
